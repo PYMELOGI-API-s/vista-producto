@@ -1,7 +1,65 @@
-﻿@page "/"
+@page "/"
+@using BlazorApp.Models
+@inject HttpClient Http
+@using System.Text.Json
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Products</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="products-header">
+    <h2>Products</h2>
+</div>
 
-Welcome to your new app.
+@if (products == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in products)
+                {
+                    <tr>
+                        <td><img src="@product.ImageUrl" alt="@product.Name" class="product-image" /></td>
+                        <td>@product.Name</td>
+                        <td>@product.Description</td>
+                        <td>$@product.Price</td>
+                        <td>@product.Stock</td>
+                        <td>@product.Category</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private List<Product>? products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var response = await Http.GetAsync("/api/productos");
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync();
+            products = JsonSerializer.Deserialize<List<Product>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions (e.g., log them, show an error message to the user)
+            Console.WriteLine($"Error fetching products: {ex.Message}");
+        }
+    }
+}

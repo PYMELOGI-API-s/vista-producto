@@ -6,6 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// Register HttpClient for external API access
+builder.Services.AddScoped(sp => new HttpClient 
+{
+    BaseAddress = new Uri("https://api.example.com") 
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -22,6 +29,7 @@ app.UseHttpsRedirection();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
