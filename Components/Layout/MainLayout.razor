@@ -1,12 +1,42 @@
 @inherits LayoutComponentBase
 
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+}
+
 <div class="main-layout">
     <NavMenu />
 
     <main class="main-content">
-        <article class="content px-4">
-            @Body
-        </article>
+        <header class="main-header">
+            <div class="header-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Buscar..." />
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+                <button class="btn btn-icon">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </header>
+        <div class="content-wrapper">
+            <div class="content-header">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@(Title ?? "Inicio")</li>
+                    </ol>
+                </nav>
+            </div>
+            <article class="content">
+                @Body
+            </article>
+        </div>
     </main>
 </div>
 

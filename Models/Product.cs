@@ -8,23 +8,29 @@ public class Product
     public int Id { get; set; }
 
     [JsonPropertyName("nombre")]
-    public string? Name { get; set; }
+    public string? Nombre { get; set; }
 
     [JsonPropertyName("descripcion")]
-    public string? Description { get; set; }
+    public string? Descripcion { get; set; }
 
     [JsonPropertyName("codigoBarras")]
-    public string? Barcode { get; set; }
+    public string? CodigoBarras { get; set; }
 
     [JsonPropertyName("precio")]
-    public decimal Price { get; set; }
+    public decimal Precio { get; set; }
 
     [JsonPropertyName("stock")]
     public int Stock { get; set; }
 
     [JsonPropertyName("categoria")]
-    public string? Category { get; set; }
+    public string? Categoria { get; set; }
 
     [JsonPropertyName("imagen")]
-    public string? ImageUrl { get; set; }
+    public string? Imagen { get; set; }
+
+    [JsonPropertyName("fechaCreacion")]
+    public DateTime FechaCreacion { get; set; }
+
+    [JsonPropertyName("fechaActualizacion")]
+    public DateTime FechaActualizacion { get; set; }
 }

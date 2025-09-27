@@ -1,17 +1,23 @@
 @page "/"
 @using BlazorApp.Models
-@inject HttpClient Http
-@using System.Text.Json
+@using BlazorApp.Services
+@using myapp.Components.Shared
+@inject IProductService ProductService
 
-<PageTitle>Products</PageTitle>
+<PageTitle>Productos</PageTitle>
 
 <div class="products-header">
     <h2>Products</h2>
 </div>
 
+@if (!string.IsNullOrEmpty(error))
+{
+    <Alert Message="@error" Type="danger" OnDismiss="@(() => error = null)" />
+}
+
 @if (products == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>Cargando...</em></p>
 }
 else
 {
@@ -31,12 +37,12 @@ else
                 @foreach (var product in products)
                 {
                     <tr>
-                        <td><img src="@product.ImageUrl" alt="@product.Name" class="product-image" /></td>
-                        <td>@product.Name</td>
-                        <td>@product.Description</td>
-                        <td>$@product.Price</td>
+                        <td><img src="@product.Imagen" alt="@product.Nombre" class="product-image" /></td>
+                        <td>@product.Nombre</td>
+                        <td>@product.Descripcion</td>
+                        <td>$@product.Precio</td>
                         <td>@product.Stock</td>
-                        <td>@product.Category</td>
+                        <td>@product.Categoria</td>
                     </tr>
                 }
             </tbody>
@@ -46,20 +52,21 @@ else
 
 @code {
     private List<Product>? products;
+    private string? error;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var response = await Http.GetAsync("/api/productos");
-            response.EnsureSuccessStatusCode();
-            var json = await response.Content.ReadAsStringAsync();
-            products = JsonSerializer.Deserialize<List<Product>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            error = null;
+            var productList = await ProductService.GetProducts();
+            products = productList.ToList();
         }
         catch (Exception ex)
         {
-            // Handle exceptions (e.g., log them, show an error message to the user)
-            Console.WriteLine($"Error fetching products: {ex.Message}");
+            error = ex.Message;
+            products = new List<Product>();
+            Console.WriteLine($"Error al cargar productos: {ex.Message}");
         }
     }
 }

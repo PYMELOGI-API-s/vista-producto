@@ -1,36 +1,36 @@
 {
   "version": 3,
   "targets": {
-    "net9.0": {}
+    "net8.0": {}
   },
   "libraries": {},
   "projectFileDependencyGroups": {
-    "net9.0": []
+    "net8.0": []
   },
   "packageFolders": {
-    "/home/user/.nuget/packages/": {}
+    "/home/codespace/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/user/vista-producto/myapp.csproj",
+      "projectUniqueName": "/workspaces/vista-producto/myapp.csproj",
       "projectName": "myapp",
-      "projectPath": "/home/user/vista-producto/myapp.csproj",
-      "packagesPath": "/home/user/.nuget/packages/",
-      "outputPath": "/home/user/vista-producto/obj/",
+      "projectPath": "/workspaces/vista-producto/myapp.csproj",
+      "packagesPath": "/home/codespace/.nuget/packages/",
+      "outputPath": "/workspaces/vista-producto/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/user/.nuget/NuGet/NuGet.Config"
+        "/home/codespace/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
-        "net9.0"
+        "net8.0"
       ],
       "sources": {
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net9.0": {
-          "targetAlias": "net9.0",
+        "net8.0": {
+          "targetAlias": "net8.0",
           "projectReferences": {}
         }
       },
@@ -43,12 +43,11 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.200"
+      }
     },
     "frameworks": {
-      "net9.0": {
-        "targetAlias": "net9.0",
+      "net8.0": {
+        "targetAlias": "net8.0",
         "imports": [
           "net461",
           "net462",
@@ -68,7 +67,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/nix/store/3hhkyi53ky9qwjj9vjzg0pyq333vlrla-dotnet-sdk-9.0.203/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.412/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -1,4 +1,5 @@
 using myapp.Components;
+using BlazorApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,10 +7,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// Register ProductService
+builder.Services.AddScoped<IProductService, ProductService>();
+
 // Register HttpClient for external API access
 builder.Services.AddScoped(sp => new HttpClient 
 {
-    BaseAddress = new Uri("https://api.example.com") 
+    BaseAddress = new Uri("https://api-producto-07d2.onrender.com") 
 });
 
 
@@ -28,7 +32,7 @@ app.UseHttpsRedirection();
 
 app.UseAntiforgery();
 
-app.MapStaticAssets();
+app.UseStaticFiles();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

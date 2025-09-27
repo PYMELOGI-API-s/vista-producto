@@ -1,0 +1,61 @@
+@page "/products"
+@using BlazorApp.Models
+@using BlazorApp.Services
+@inject IProductService ProductService
+
+<PageTitle>Productos</PageTitle>
+
+<h1>Productos</h1>
+
+@if (products == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else if (!products.Any())
+{
+    <p>No hay productos disponibles.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var product in products)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    @if (!string.IsNullOrEmpty(product.Imagen))
+                    {
+                        <img src="@product.Imagen" class="card-img-top" alt="@product.Nombre">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Nombre</h5>
+                        <p class="card-text">@product.Descripcion</p>
+                        <p class="card-text"><small class="text-muted">Código: @product.CodigoBarras</small></p>
+                        <p class="card-text">
+                            <strong>Precio:</strong> $@product.Precio.ToString("N2")<br />
+                            <strong>Stock:</strong> @product.Stock<br />
+                            <strong>Categoría:</strong> @product.Categoria
+                        </p>
+                        <p class="card-text"><small class="text-muted">Actualizado: @product.FechaActualizacion.ToLocalTime()</small></p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private IEnumerable<Product>? products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            products = await ProductService.GetProducts();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar productos: {ex.Message}");
+            products = Array.Empty<Product>();
+        }
+    }
+}

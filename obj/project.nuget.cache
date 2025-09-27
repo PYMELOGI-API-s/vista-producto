@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "CPRHjGDOVN0=",
+  "dgSpecHash": "ep5D/x9VtVc=",
   "success": true,
-  "projectFilePath": "/home/user/vista-producto/myapp.csproj",
+  "projectFilePath": "/workspaces/vista-producto/myapp.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
