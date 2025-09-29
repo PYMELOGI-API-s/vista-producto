@@ -1,4 +1,6 @@
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using BlazorApp.Models;
 
 namespace BlazorApp.Services;
@@ -21,56 +23,213 @@ public class ProductService : IProductService
         _httpClient = httpClient;
     }
 
+    private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true,
+        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+    };
+
     public async Task<IEnumerable<Product>> GetProducts()
     {
         try
         {
-            var response = await _httpClient.GetAsync("/api/productos");
-            response.EnsureSuccessStatusCode();
+            using var request = new HttpRequestMessage(HttpMethod.Get, "/api/productos");
+            request.Headers.Add("Accept", "application/json");
+            
+            Console.WriteLine($"Realizando solicitud GET a: {_httpClient.BaseAddress}/api/productos");
+            var response = await _httpClient.SendAsync(request);
+            
             var content = await response.Content.ReadAsStringAsync();
-            var result = System.Text.Json.JsonSerializer.Deserialize<ApiResponse<List<Product>>>(content, new System.Text.Json.JsonSerializerOptions
+            Console.WriteLine($"Status Code: {(int)response.StatusCode} ({response.StatusCode})");
+            Console.WriteLine($"Headers: {string.Join(", ", response.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}"))}");
+            Console.WriteLine($"Respuesta recibida: {content}");
+
+            if (!response.IsSuccessStatusCode)
             {
-                PropertyNameCaseInsensitive = true
-            });
-            return result?.Data ?? new List<Product>();
+                throw new HttpRequestException($"La API respondió con status code: {response.StatusCode}");
+            }
+
+            // Intenta deserializar primero como una lista directa
+            try
+            {
+                var productList = JsonSerializer.Deserialize<List<Product>>(content, _jsonOptions);
+                if (productList != null)
+                {
+                    Console.WriteLine($"Deserializado exitosamente como List<Product>. Productos encontrados: {productList.Count}");
+                    return productList;
+                }
+            }
+            catch (JsonException)
+            {
+                Console.WriteLine("No se pudo deserializar como List<Product>, intentando como ApiResponse<List<Product>>");
+            }
+
+            // Si falla, intenta deserializar como ApiResponse
+            var apiResponse = JsonSerializer.Deserialize<ApiResponse<List<Product>>>(content, _jsonOptions);
+            if (apiResponse?.Data != null)
+            {
+                Console.WriteLine($"Deserializado exitosamente como ApiResponse. Productos encontrados: {apiResponse.Data.Count}");
+                return apiResponse.Data;
+            }
+
+            Console.WriteLine("No se pudieron obtener productos de la respuesta");
+            return new List<Product>();
         }
-        catch (HttpRequestException ex)
+        catch (Exception ex)
         {
-            Console.WriteLine($"Error de conexión con la API: {ex.Message}");
-            throw new Exception("No se pudo conectar con el servidor. Por favor, intente más tarde.", ex);
-        }
-        catch (System.Text.Json.JsonException ex)
-        {
-            Console.WriteLine($"Error al procesar la respuesta de la API: {ex.Message}");
-            throw new Exception("Error al procesar los datos del servidor.", ex);
+            Console.WriteLine($"Error al obtener productos: {ex.GetType().Name} - {ex.Message}");
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+            }
+            throw new Exception("No se pudieron obtener los productos. Por favor, intente más tarde.", ex);
         }
     }
 
     public async Task<Product?> GetProduct(int id)
     {
-        var response = await _httpClient.GetFromJsonAsync<ApiResponse<Product>>($"/api/productos/{id}");
-        return response?.Data;
+        try
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"/api/productos/{id}");
+            request.Headers.Add("Accept", "application/json");
+            
+            Console.WriteLine($"Realizando solicitud GET a: {_httpClient.BaseAddress}/api/productos/{id}");
+            var response = await _httpClient.SendAsync(request);
+            
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Status Code: {(int)response.StatusCode} ({response.StatusCode})");
+            Console.WriteLine($"Headers: {string.Join(", ", response.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}"))}");
+            Console.WriteLine($"Respuesta recibida: {content}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"La API respondió con status code: {response.StatusCode}");
+            }
+
+            // Intenta deserializar directamente como Product
+            try
+            {
+                var product = JsonSerializer.Deserialize<Product>(content, _jsonOptions);
+                if (product != null)
+                {
+                    Console.WriteLine("Deserializado exitosamente como Product");
+                    return product;
+                }
+            }
+            catch (JsonException)
+            {
+                Console.WriteLine("No se pudo deserializar como Product, intentando como ApiResponse<Product>");
+            }
+
+            // Si falla, intenta deserializar como ApiResponse
+            var apiResponse = JsonSerializer.Deserialize<ApiResponse<Product>>(content, _jsonOptions);
+            if (apiResponse?.Data != null)
+            {
+                Console.WriteLine("Deserializado exitosamente como ApiResponse<Product>");
+                return apiResponse.Data;
+            }
+
+            Console.WriteLine("No se pudo obtener el producto de la respuesta");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al obtener producto {id}: {ex.GetType().Name} - {ex.Message}");
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+            }
+            throw new Exception($"No se pudo obtener el producto {id}. Por favor, intente más tarde.", ex);
+        }
     }
 
     public async Task<Product> CreateProduct(Product product)
     {
-        var response = await _httpClient.PostAsJsonAsync("/api/productos", product);
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<ApiResponse<Product>>();
-        return result?.Data ?? throw new Exception("No se pudo crear el producto");
+        try
+        {
+            var json = System.Text.Json.JsonSerializer.Serialize(product);
+            Console.WriteLine($"Realizando solicitud POST a /productos con datos: {json}");
+            
+            var response = await _httpClient.PostAsJsonAsync("/productos", product);
+            Console.WriteLine($"Status Code: {response.StatusCode}");
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"API Response (Create): {content}");
+            
+            response.EnsureSuccessStatusCode();
+            
+            var apiResponse = System.Text.Json.JsonSerializer.Deserialize<ApiResponse<Product>>(content, new System.Text.Json.JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+            
+            return apiResponse?.Data ?? throw new Exception("No se pudo crear el producto: la respuesta no contiene datos");
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"Error al crear producto - HTTP: {ex.Message}");
+            throw new Exception($"Error al crear el producto: {ex.Message}", ex);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al crear producto: {ex.Message}");
+            throw new Exception($"Error inesperado al crear el producto: {ex.Message}", ex);
+        }
     }
 
     public async Task<Product> UpdateProduct(int id, Product product)
     {
-        var response = await _httpClient.PutAsJsonAsync($"/api/productos/{id}", product);
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<ApiResponse<Product>>();
-        return result?.Data ?? throw new Exception("No se pudo actualizar el producto");
+        try
+        {
+            var json = System.Text.Json.JsonSerializer.Serialize(product);
+            Console.WriteLine($"Realizando solicitud PUT a /productos/{id} con datos: {json}");
+            
+            var response = await _httpClient.PutAsJsonAsync($"/productos/{id}", product);
+            Console.WriteLine($"Status Code: {response.StatusCode}");
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"API Response (Update): {content}");
+            
+            response.EnsureSuccessStatusCode();
+            
+            var apiResponse = System.Text.Json.JsonSerializer.Deserialize<ApiResponse<Product>>(content, new System.Text.Json.JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+            
+            return apiResponse?.Data ?? throw new Exception("No se pudo actualizar el producto: la respuesta no contiene datos");
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"Error al actualizar producto - HTTP: {ex.Message}");
+            throw new Exception($"Error al actualizar el producto: {ex.Message}", ex);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al actualizar producto: {ex.Message}");
+            throw new Exception($"Error inesperado al actualizar el producto: {ex.Message}", ex);
+        }
     }
 
     public async Task DeleteProduct(int id)
     {
-        var response = await _httpClient.DeleteAsync($"/api/productos/{id}");
-        response.EnsureSuccessStatusCode();
+        try
+        {
+            Console.WriteLine($"Realizando solicitud DELETE a /productos/{id}");
+            var response = await _httpClient.DeleteAsync($"/productos/{id}");
+            Console.WriteLine($"Status Code: {response.StatusCode}");
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"API Response (Delete): {content}");
+            
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"Error al eliminar producto - HTTP: {ex.Message}");
+            throw new Exception($"Error al eliminar el producto: {ex.Message}", ex);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al eliminar producto: {ex.Message}");
+            throw new Exception($"Error inesperado al eliminar el producto: {ex.Message}", ex);
+        }
     }
 }

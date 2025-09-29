@@ -11,9 +11,15 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<IProductService, ProductService>();
 
 // Register HttpClient for external API access
-builder.Services.AddScoped(sp => new HttpClient 
+builder.Services.AddHttpClient<IProductService, ProductService>(client =>
 {
-    BaseAddress = new Uri("https://api-producto-07d2.onrender.com") 
+    client.BaseAddress = new Uri("https://api-producto-07d2.onrender.com/");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    client.DefaultRequestHeaders.Add("User-Agent", "Blazor-Client");
+    client.Timeout = TimeSpan.FromSeconds(30);
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
 });
 
 

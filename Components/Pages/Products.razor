@@ -2,10 +2,46 @@
 @using BlazorApp.Models
 @using BlazorApp.Services
 @inject IProductService ProductService
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Productos</PageTitle>
 
-<h1>Productos</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Productos</h1>
+    <button class="btn btn-primary" @onclick="() => ShowCreateForm()">Nuevo Producto</button>
+</div>
+
+@if (showForm)
+{
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>@(editingProduct?.Id > 0 ? "Editar" : "Crear") Producto</h3>
+        </div>
+        <div class="card-body">
+            <ProductForm 
+                Product="@currentProduct" 
+                ButtonText="@(editingProduct?.Id > 0 ? "Actualizar" : "Crear")"
+                OnValidSubmit="@HandleValidSubmit"
+                OnCancel="@HandleCancel" />
+        </div>
+    </div>
+}
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close float-end" @onclick="@(() => errorMessage = null)"></button>
+    </div>
+}
+
+@if (successMessage != null)
+{
+    <div class="alert alert-success" role="alert">
+        @successMessage
+        <button type="button" class="btn-close float-end" @onclick="@(() => successMessage = null)"></button>
+    </div>
+}
 
 @if (products == null)
 {
@@ -17,45 +53,199 @@ else if (!products.Any())
 }
 else
 {
-    <div class="row">
-        @foreach (var product in products)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    @if (!string.IsNullOrEmpty(product.Imagen))
-                    {
-                        <img src="@product.Imagen" class="card-img-top" alt="@product.Nombre">
-                    }
-                    <div class="card-body">
-                        <h5 class="card-title">@product.Nombre</h5>
-                        <p class="card-text">@product.Descripcion</p>
-                        <p class="card-text"><small class="text-muted">Código: @product.CodigoBarras</small></p>
-                        <p class="card-text">
-                            <strong>Precio:</strong> $@product.Precio.ToString("N2")<br />
-                            <strong>Stock:</strong> @product.Stock<br />
-                            <strong>Categoría:</strong> @product.Categoria
-                        </p>
-                        <p class="card-text"><small class="text-muted">Actualizado: @product.FechaActualizacion.ToLocalTime()</small></p>
-                    </div>
-                </div>
-            </div>
-        }
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Categoría</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in products)
+                {
+                    <tr>
+                        <td>
+                            @if (!string.IsNullOrEmpty(product.Imagen))
+                            {
+                                <img src="@product.Imagen" style="max-height: 50px;" alt="@product.Nombre">
+                            }
+                        </td>
+                        <td>@product.Nombre</td>
+                        <td>@product.CodigoBarras</td>
+                        <td>$@product.Precio.ToString("N2")</td>
+                        <td>@product.Stock</td>
+                        <td>@product.Categoria</td>
+                        <td>
+                            <button class="btn btn-sm btn-info me-2" @onclick="() => ShowEditForm(product)">
+                                Editar
+                            </button>
+                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteProduct(product.Id)">
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 }
 
 @code {
     private IEnumerable<Product>? products;
+    private bool showForm;
+    private Product currentProduct = new();
+    private Product? editingProduct;
+    private string? errorMessage;
+    private string? successMessage;
 
     protected override async Task OnInitializedAsync()
+    {
+        await LoadProducts();
+    }
+
+    private async Task LoadProducts()
     {
         try
         {
             products = await ProductService.GetProducts();
+            errorMessage = null;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error al cargar productos: {ex.Message}");
+            errorMessage = $"Error al cargar productos: {ex.Message}";
             products = Array.Empty<Product>();
+        }
+    }
+
+    private void ShowCreateForm()
+    {
+        editingProduct = null;
+        currentProduct = new Product
+        {
+            FechaCreacion = DateTime.UtcNow,
+            FechaActualizacion = DateTime.UtcNow
+        };
+        showForm = true;
+    }
+
+    private void ShowEditForm(Product product)
+    {
+        editingProduct = product;
+        currentProduct = new Product
+        {
+            Id = product.Id,
+            Nombre = product.Nombre,
+            Descripcion = product.Descripcion,
+            CodigoBarras = product.CodigoBarras,
+            Precio = product.Precio,
+            Stock = product.Stock,
+            Categoria = product.Categoria,
+            Imagen = product.Imagen,
+            FechaCreacion = product.FechaCreacion,
+            FechaActualizacion = DateTime.UtcNow
+        };
+        showForm = true;
+    }
+
+    private bool isProcessing = false;
+
+    private async Task HandleValidSubmit(Product product)
+    {
+        if (isProcessing) return;
+        
+        try
+        {
+            isProcessing = true;
+            errorMessage = null;
+            successMessage = "Procesando...";
+            StateHasChanged();
+
+            if (editingProduct != null)
+            {
+                Console.WriteLine($"Actualizando producto ID: {product.Id}");
+                // Asegurar que las fechas estén en UTC
+                product.FechaActualizacion = DateTime.UtcNow;
+                var updatedProduct = await ProductService.UpdateProduct(product.Id, product);
+                Console.WriteLine($"Producto actualizado: {System.Text.Json.JsonSerializer.Serialize(updatedProduct)}");
+                successMessage = "Producto actualizado exitosamente.";
+            }
+            else
+            {
+                Console.WriteLine("Creando nuevo producto");
+                // Establecer fechas para nuevo producto
+                product.FechaCreacion = DateTime.UtcNow;
+                product.FechaActualizacion = DateTime.UtcNow;
+                var createdProduct = await ProductService.CreateProduct(product);
+                Console.WriteLine($"Producto creado: {System.Text.Json.JsonSerializer.Serialize(createdProduct)}");
+                successMessage = "Producto creado exitosamente.";
+            }
+
+            await LoadProducts();
+            showForm = false;
+            editingProduct = null;
+            currentProduct = new();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error en HandleValidSubmit: {ex.Message}");
+            errorMessage = ex.Message;
+            successMessage = null;
+        }
+        finally
+        {
+            isProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private void HandleCancel()
+    {
+        if (isProcessing) return;
+        
+        showForm = false;
+        editingProduct = null;
+        currentProduct = new();
+        errorMessage = null;
+        successMessage = null;
+        StateHasChanged();
+    }
+
+    private async Task DeleteProduct(int id)
+    {
+        if (isProcessing) return;
+        
+        try
+        {
+            var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "¿Está seguro que desea eliminar este producto?");
+            if (confirmed)
+            {
+                isProcessing = true;
+                Console.WriteLine($"Eliminando producto ID: {id}");
+                errorMessage = null;
+                successMessage = "Eliminando...";
+                StateHasChanged();
+
+                await ProductService.DeleteProduct(id);
+                successMessage = "Producto eliminado exitosamente.";
+                await LoadProducts();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al eliminar producto: {ex.Message}");
+            errorMessage = $"Error al eliminar el producto: {ex.Message}";
+            successMessage = null;
+        }
+        finally
+        {
+            isProcessing = false;
+            StateHasChanged();
         }
     }
 }

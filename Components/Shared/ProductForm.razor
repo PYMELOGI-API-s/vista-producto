@@ -1,0 +1,71 @@
+@using BlazorApp.Models
+@namespace BlazorApp.Components.Shared
+
+<EditForm Model="@Product" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre</label>
+        <InputText id="nombre" @bind-Value="Product.Nombre" class="form-control" />
+        <ValidationMessage For="@(() => Product.Nombre)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="descripcion" class="form-label">Descripción</label>
+        <InputTextArea id="descripcion" @bind-Value="Product.Descripcion" class="form-control" rows="3" />
+        <ValidationMessage For="@(() => Product.Descripcion)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="codigoBarras" class="form-label">Código de Barras</label>
+        <InputText id="codigoBarras" @bind-Value="Product.CodigoBarras" class="form-control" />
+        <ValidationMessage For="@(() => Product.CodigoBarras)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="precio" class="form-label">Precio</label>
+        <InputNumber id="precio" @bind-Value="Product.Precio" class="form-control" />
+        <ValidationMessage For="@(() => Product.Precio)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="stock" class="form-label">Stock</label>
+        <InputNumber id="stock" @bind-Value="Product.Stock" class="form-control" />
+        <ValidationMessage For="@(() => Product.Stock)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="categoria" class="form-label">Categoría</label>
+        <InputText id="categoria" @bind-Value="Product.Categoria" class="form-control" />
+        <ValidationMessage For="@(() => Product.Categoria)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="imagen" class="form-label">URL de la Imagen</label>
+        <InputText id="imagen" @bind-Value="Product.Imagen" class="form-control" />
+        <ValidationMessage For="@(() => Product.Imagen)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">@ButtonText</button>
+    <button type="button" class="btn btn-secondary" @onclick="OnCancel">Cancelar</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public Product Product { get; set; } = new();
+
+    [Parameter]
+    public string ButtonText { get; set; } = "Guardar";
+
+    [Parameter]
+    public EventCallback<Product> OnValidSubmit { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private async Task HandleValidSubmit()
+    {
+        await OnValidSubmit.InvokeAsync(Product);
+    }
+}
