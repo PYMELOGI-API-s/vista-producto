@@ -1,0 +1,401 @@
+@using Microsoft.AspNetCore.Components.Forms@using Microsoft.AspNetCore.Components.Forms@using Microsoft.AspNetCore.Components.Forms
+
+@using System.Net.Http
+
+@using System.Net.Http.Headers@using System.Net.Http@using System.Net.Http
+
+@using System.IO
+
+@using BlazorApp.Models@using System.Net.Http.Headers@using System.Net.Http.Headers
+
+@inject IJSRuntime JSRuntime
+
+@inject IHttpClientFactory ClientFactory@using BlazorApp.Models@using BlazorApp.Models
+
+@inject IWebHostEnvironment Environment
+
+@namespace BlazorApp.Components.Shared@inject IJSRuntime JSRuntime@inject IJSRuntime JSRuntime
+
+
+
+<div class="image-uploader">@inject IHttpClientFactory ClientFactory@inject IHttpClientFactory ClientFactory
+
+    <div class="d-flex gap-3 align-items-center">
+
+        <div class="flex-grow-1">@namespace BlazorApp.Components.Shared@namespace BlazorApp.Components.Shared
+
+            <InputText @bind-Value="Value" class="form-control" placeholder="/images/ejemplo.jpg" />
+
+            <small class="text-muted">La ruta debe comenzar con /images/ y terminar en .jpg, .jpeg, .png, .gif o .webp</small>
+
+        </div>
+
+        @if (!string.IsNullOrEmpty(Value))<div class="image-uploader"><div class="image-uploader">
+
+        {
+
+            <img src="@Value" alt="Vista previa" style="max-width: 100px; max-height: 100px;" class="img-thumbnail" />    <div class="d-flex gap-3 align-items-center">    <div class="d-flex gap-3 align-items-center">
+
+        }
+
+        <InputFile OnChange="@OnFileChange" accept="image/*" class="form-control" />        <div class="flex-grow-1">        <div class="flex-grow-1">
+
+    </div>
+
+    @if (IsUploading)            <InputText @bind-Value="Value" class="form-control" placeholder="/images/ejemplo.jpg" />            <InputText @bind-Value="Value" class="form-control" placeholder="/images/ejemplo.jpg" />
+
+    {
+
+        <div class="progress mt-2">            <small class="text-muted">La ruta debe comenzar con /images/ y terminar en .jpg, .jpeg, .png, .gif o .webp</small>            <small class="text-muted">La ruta debe comenzar con /images/ y terminar en .jpg, .jpeg, .png, .gif o .webp</small>
+
+            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+
+                 role="progressbar"         </div>        </div>
+
+                 style="width: @UploadProgress%" 
+
+                 aria-valuenow="@UploadProgress"         @if (!string.IsNullOrEmpty(Value))        @if (!string.IsNullOrEmpty(Value))
+
+                 aria-valuemin="0" 
+
+                 aria-valuemax="100">        {        {
+
+                @UploadProgress%
+
+            </div>            <img src="@GetImageUrl(Value)" alt="Vista previa" style="max-width: 100px; max-height: 100px;" class="img-thumbnail" />            <img src="@GetImageUrl(Value)" alt="Vista previa" style="max-width: 100px; max-height: 100px;" class="img-thumbnail" />
+
+        </div>
+
+    }        }        }
+
+</div>
+
+        <InputFile OnChange="@OnFileChange" accept="image/*" class="form-control" />        <InputFile OnChange="@OnFileChange" accept="image/*" class="form-control" />
+
+@code {
+
+    [Parameter]    </div>    </div>
+
+    public string? Value { get; set; }
+
+    @if (IsUploading)    @if (IsUploading)
+
+    [Parameter]
+
+    public EventCallback<string> ValueChanged { get; set; }    {    {
+
+
+
+    private bool IsUploading { get; set; }        <div class="progress mt-2">        <div class="progress mt-2">
+
+    private int UploadProgress { get; set; }
+
+    private const long MaxFileSize = 5 * 1024 * 1024; // 5MB            <div class="progress-bar progress-bar-striped progress-bar-animated"             <div class="progress-bar progress-bar-striped progress-bar-animated" 
+
+
+
+    private static bool IsValidImagePath(string path)                 role="progressbar"                  role="progressbar" 
+
+    {
+
+        if (string.IsNullOrEmpty(path)) return false;                 style="width: @UploadProgress%"                  style="width: @UploadProgress%" 
+
+        if (!path.StartsWith("/images/")) return false;
+
+                 aria-valuenow="@UploadProgress"                  aria-valuenow="@UploadProgress" 
+
+        string pattern = @"\.(jpg|jpeg|png|gif|webp)$";
+
+        return System.Text.RegularExpressions.Regex.IsMatch(path.ToLower(), pattern);                 aria-valuemin="0"                  aria-valuemin="0" 
+
+    }
+
+                 aria-valuemax="100">                 aria-valuemax="100">
+
+    private async Task OnFileChange(InputFileChangeEventArgs e)
+
+    {                @UploadProgress%                @UploadProgress%
+
+        try
+
+        {            </div>            </div>
+
+            var file = e.File;
+
+            if (file == null)        </div>        </div>
+
+            {
+
+                await JSRuntime.InvokeVoidAsync("alert", "Por favor seleccione un archivo");    }    }
+
+                return;
+
+            }</div></div>
+
+
+
+            if (file.Size > MaxFileSize)
+
+            {
+
+                await JSRuntime.InvokeVoidAsync("alert", "El archivo es demasiado grande. El tamaño máximo permitido es 5MB");@code {@code {
+
+                return;
+
+            }    [Parameter]    [Parameter]
+
+
+
+            string[] allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };    public string? Value { get; set; }    public string? Value { get; set; }
+
+            string extension = Path.GetExtension(file.Name).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(extension))
+
+            {
+
+                await JSRuntime.InvokeVoidAsync("alert", "Solo se permiten archivos de imagen (jpg, jpeg, png, gif, webp)");    [Parameter]    [Parameter]
+
+                return;
+
+            }    public EventCallback<string> ValueChanged { get; set; }    public EventCallback<string> ValueChanged { get; set; }
+
+
+
+            IsUploading = true;
+
+            UploadProgress = 0;
+
+            StateHasChanged();    private bool IsUploading { get; set; }    private bool IsUploading { get; set; }
+
+
+
+            try    private int UploadProgress { get; set; }    private int UploadProgress { get; set; }
+
+            {
+
+                // Generar un nombre de archivo único basado en timestamp    private const long MaxFileSize = 5 * 1024 * 1024; // 5MB    private const long MaxFileSize = 5 * 1024 * 1024; // 5MB
+
+                var timestamp = DateTime.Now.Ticks;
+
+                var fileName = $"{timestamp}{extension}";
+
+                var relativePath = $"/images/{fileName}";
+
+                    private static bool IsValidImagePath(string path)    private static bool IsValidImagePath(string path)
+
+                // Obtener la ruta física donde se guardará la imagen
+
+                var physicalPath = Path.Combine(Environment.WebRootPath, "images", fileName);    {    {
+
+                
+
+                Console.WriteLine($"Guardando archivo en: {physicalPath}");        if (string.IsNullOrEmpty(path)) return false;        if (string.IsNullOrEmpty(path)) return false;
+
+
+
+                // Crear el directorio si no existe        if (!path.StartsWith("/images/") && !path.StartsWith("images/")) return false;        if (!path.StartsWith("/images/") && !path.StartsWith("images/")) return false;
+
+                Directory.CreateDirectory(Path.GetDirectoryName(physicalPath)!);
+
+
+
+                // Guardar el archivo
+
+                await using (var stream = new FileStream(physicalPath, FileMode.Create))        string pattern = @"\.(jpg|jpeg|png|gif|webp)$";        string pattern = @"\.(jpg|jpeg|png|gif|webp)$";
+
+                {
+
+                    await file.OpenReadStream(MaxFileSize).CopyToAsync(stream);        return System.Text.RegularExpressions.Regex.IsMatch(path.ToLower(), pattern);        return System.Text.RegularExpressions.Regex.IsMatch(path.ToLower(), pattern);
+
+                }
+
+    }    }
+
+                Console.WriteLine($"Archivo guardado exitosamente: {relativePath}");
+
+                
+
+                UploadProgress = 100;
+
+                StateHasChanged();    private string GetImageUrl(string localPath)    private string GetImageUrl(string localPath)
+
+                
+
+                // Actualizar el valor con la ruta relativa    {    {
+
+                await ValueChanged.InvokeAsync(relativePath);
+
+            }        if (string.IsNullOrEmpty(localPath)) return string.Empty;        if (string.IsNullOrEmpty(localPath)) return string.Empty;
+
+            finally
+
+            {
+
+                IsUploading = false;
+
+                UploadProgress = 0;        var client = ClientFactory.CreateClient("API");        var client = ClientFactory.CreateClient("API");
+
+                StateHasChanged();
+
+            }        var baseUrl = client.BaseAddress?.ToString()?.TrimEnd('/');        var baseUrl = client.BaseAddress?.ToString()?.TrimEnd('/');
+
+        }
+
+        catch (Exception ex)        return $"{baseUrl}{(localPath.StartsWith("/") ? "" : "/")}{localPath}";        return $"{baseUrl}{(localPath.StartsWith("/") ? "" : "/")}{localPath}";
+
+        {
+
+            Console.WriteLine($"Error al guardar la imagen: {ex}");    }    }
+
+            await JSRuntime.InvokeVoidAsync("alert", $"Error al guardar la imagen: {ex.Message}");
+
+            IsUploading = false;
+
+            UploadProgress = 0;
+
+            StateHasChanged();    private async Task OnFileChange(InputFileChangeEventArgs e)    private async Task OnFileChange(InputFileChangeEventArgs e)
+
+        }
+
+    }    {    {
+
+}
+        try        try
+
+        {        {
+
+            var file = e.File;            var file = e.File;
+
+            if (file == null)            if (file == null)
+
+            {            {
+
+                await JSRuntime.InvokeVoidAsync("alert", "Por favor seleccione un archivo");                await JSRuntime.InvokeVoidAsync("alert", "Por favor seleccione un archivo");
+
+                return;                return;
+
+            }            }
+
+
+
+            if (file.Size > MaxFileSize)            if (file.Size > MaxFileSize)
+
+            {            {
+
+                await JSRuntime.InvokeVoidAsync("alert", "El archivo es demasiado grande. El tamaño máximo permitido es 5MB");                await JSRuntime.InvokeVoidAsync("alert", "El archivo es demasiado grande. El tamaño máximo permitido es 5MB");
+
+                return;                return;
+
+            }            }
+
+
+
+            string[] allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };            string[] allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+
+            string extension = Path.GetExtension(file.Name).ToLowerInvariant();            string extension = Path.GetExtension(file.Name).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(extension))            if (!allowedExtensions.Contains(extension))
+
+            {            {
+
+                await JSRuntime.InvokeVoidAsync("alert", "Solo se permiten archivos de imagen (jpg, jpeg, png, gif, webp)");                await JSRuntime.InvokeVoidAsync("alert", "Solo se permiten archivos de imagen (jpg, jpeg, png, gif, webp)");
+
+                return;                return;
+
+            }            }
+
+
+
+            IsUploading = true;            IsUploading = true;
+
+            UploadProgress = 0;            UploadProgress = 0;
+
+            StateHasChanged();            StateHasChanged();
+
+
+
+            try            try
+
+            {            {
+
+                // Generar un nombre de archivo único basado en timestamp                // Generar un nombre de archivo único basado en timestamp
+
+                var timestamp = DateTime.Now.Ticks;                var timestamp = DateTime.Now.Ticks;
+
+                var fileName = $"{timestamp}{extension}";                var fileName = $"{timestamp}{extension}";
+
+                var localPath = $"/images/{fileName}";                var localPath = $"/images/{fileName}";
+
+
+
+                var client = ClientFactory.CreateClient("API");                // Simular una pequeña demora para la carga
+
+                                await Task.Delay(1000);
+
+                // Crear el contenido multipart                UploadProgress = 100;
+
+                var content = new MultipartFormDataContent();                StateHasChanged();
+
+                var fileContent = new StreamContent(await file.OpenReadStream(MaxFileSize).AsStream());                
+
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);                // Actualizar el valor con la ruta local
+
+                                await ValueChanged.InvokeAsync(localPath);
+
+                // Agregar el archivo al contenido multipart            }
+
+                content.Add(fileContent, "file", fileName);            finally
+
+                            {
+
+                Console.WriteLine($"Enviando archivo a: {client.BaseAddress}api/productos/upload");                IsUploading = false;
+
+                Console.WriteLine($"Nombre del archivo: {fileName}");                UploadProgress = 0;
+
+                Console.WriteLine($"Tipo de contenido: {file.ContentType}");                StateHasChanged();
+
+                Console.WriteLine($"Tamaño: {file.Size} bytes");            }
+
+        }
+
+                // Enviar el archivo al servidor        catch (Exception ex)
+
+                var response = await client.PostAsync("api/productos/upload", content);        {
+
+                var responseContent = await response.Content.ReadAsStringAsync();            await JSRuntime.InvokeVoidAsync("alert", $"Error al cargar la imagen: {ex.Message}");
+
+                Console.WriteLine($"Respuesta del servidor: {responseContent}");            IsUploading = false;
+
+            UploadProgress = 0;
+
+                if (!response.IsSuccessStatusCode)            StateHasChanged();
+
+                {        }
+
+                    throw new Exception($"Error del servidor: {response.StatusCode} - {responseContent}");    }
+
+                }}
+
+                UploadProgress = 100;
+                StateHasChanged();
+                
+                // Actualizar el valor con la ruta local
+                await ValueChanged.InvokeAsync(localPath);
+            }
+            finally
+            {
+                IsUploading = false;
+                UploadProgress = 0;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error al cargar la imagen: {ex.Message}");
+            IsUploading = false;
+            UploadProgress = 0;
+            StateHasChanged();
+        }
+    }
+}

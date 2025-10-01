@@ -9,8 +9,16 @@
       "PackagePath": "staticwebassets/app.css"
     },
     {
+      "Id": "/workspaces/vista-producto/wwwroot/css/bootstrap-icons.css",
+      "PackagePath": "staticwebassets/css/bootstrap-icons.css"
+    },
+    {
       "Id": "/workspaces/vista-producto/wwwroot/favicon.png",
       "PackagePath": "staticwebassets/favicon.png"
+    },
+    {
+      "Id": "/workspaces/vista-producto/wwwroot/images/638949444588695831.jpg",
+      "PackagePath": "staticwebassets/images/638949444588695831.jpg"
     },
     {
       "Id": "/workspaces/vista-producto/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.css",

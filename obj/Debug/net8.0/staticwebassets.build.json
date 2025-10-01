@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Uh9SsXLjkZYpixyUoGkTe/wNDdUsjNdm8vDbk7HdHCw=",
+  "Hash": "zMbMFJoDg9EQK7rNjrybqDrwKMuoDb0ToJYrD7vujjc=",
   "Source": "myapp",
   "BasePath": "_content/myapp",
   "Mode": "Default",
@@ -74,6 +74,25 @@
       "OriginalItemSpec": "wwwroot/app.css"
     },
     {
+      "Identity": "/workspaces/vista-producto/wwwroot/css/bootstrap-icons.css",
+      "SourceId": "myapp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/workspaces/vista-producto/wwwroot/",
+      "BasePath": "_content/myapp",
+      "RelativePath": "css/bootstrap-icons.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/css/bootstrap-icons.css"
+    },
+    {
       "Identity": "/workspaces/vista-producto/wwwroot/favicon.png",
       "SourceId": "myapp",
       "SourceType": "Discovered",
@@ -91,6 +110,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/favicon.png"
+    },
+    {
+      "Identity": "/workspaces/vista-producto/wwwroot/images/638949444588695831.jpg",
+      "SourceId": "myapp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/workspaces/vista-producto/wwwroot/",
+      "BasePath": "_content/myapp",
+      "RelativePath": "images/638949444588695831.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/images/638949444588695831.jpg"
     },
     {
       "Identity": "/workspaces/vista-producto/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.css",

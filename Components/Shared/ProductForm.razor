@@ -1,4 +1,10 @@
 @using BlazorApp.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Net.Http.Headers
+@using BlazorApp.Components.Shared
+@using System.Security.Cryptography
+@inject ILogger<ProductForm> Logger
+@inject IJSRuntime JSRuntime
 @namespace BlazorApp.Components.Shared
 
 <EditForm Model="@Product" OnValidSubmit="@HandleValidSubmit">
@@ -17,11 +23,7 @@
         <ValidationMessage For="@(() => Product.Descripcion)" />
     </div>
 
-    <div class="mb-3">
-        <label for="codigoBarras" class="form-label">Código de Barras</label>
-        <InputText id="codigoBarras" @bind-Value="Product.CodigoBarras" class="form-control" />
-        <ValidationMessage For="@(() => Product.CodigoBarras)" />
-    </div>
+
 
     <div class="mb-3">
         <label for="precio" class="form-label">Precio</label>
@@ -42,8 +44,8 @@
     </div>
 
     <div class="mb-3">
-        <label for="imagen" class="form-label">URL de la Imagen</label>
-        <InputText id="imagen" @bind-Value="Product.Imagen" class="form-control" />
+        <label for="imagen" class="form-label">Imagen del Producto</label>
+        <ImageUploader Value="@Product.Imagen" ValueChanged="@OnImageChanged" />
         <ValidationMessage For="@(() => Product.Imagen)" />
     </div>
 
@@ -66,6 +68,25 @@
 
     private async Task HandleValidSubmit()
     {
+        // Solo generar código de barras si es un producto nuevo (Id = 0)
+        if (Product.Id == 0)
+        {
+            // Generar un timestamp de 10 dígitos (Unix timestamp en segundos)
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
+            
+            // Generar 5 dígitos aleatorios
+            var random = new Random();
+            var randomDigits = random.Next(10000, 99999).ToString();
+            
+            // Combinar para crear un código de barras de 15 dígitos
+            Product.CodigoBarras = timestamp + randomDigits;
+        }
+
         await OnValidSubmit.InvokeAsync(Product);
+    }
+
+    private void OnImageChanged(string newValue)
+    {
+        Product.Imagen = newValue;
     }
 }
