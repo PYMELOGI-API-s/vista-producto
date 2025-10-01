@@ -1,0 +1,61 @@
+@page "/products/create"
+@using BlazorApp.Models
+@using BlazorApp.Services
+@using BlazorApp.Components.Shared
+@inject IProductService ProductService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Crear Producto</PageTitle>
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h3>Crear Nuevo Producto</h3>
+        </div>
+        <div class="card-body">
+            @if (errorMessage != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @errorMessage
+                    <button type="button" class="btn-close float-end" @onclick="@(() => errorMessage = null)"></button>
+                </div>
+            }
+
+            <ProductForm 
+                Product="@newProduct" 
+                ButtonText="Crear"
+                OnValidSubmit="@HandleValidSubmit"
+                OnCancel="@(() => NavigationManager.NavigateTo("/products"))" />
+        </div>
+    </div>
+</div>
+
+@code {
+    private Product newProduct = new()
+    {
+        FechaCreacion = DateTime.UtcNow,
+        FechaActualizacion = DateTime.UtcNow
+    };
+    private string? errorMessage;
+    private bool isProcessing = false;
+
+    private async Task HandleValidSubmit(Product product)
+    {
+        if (isProcessing) return;
+
+        try
+        {
+            isProcessing = true;
+            var createdProduct = await ProductService.CreateProduct(product);
+            NavigationManager.NavigateTo($"/products/{createdProduct.Id}");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+}

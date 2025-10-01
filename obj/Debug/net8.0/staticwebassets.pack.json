@@ -9,6 +9,10 @@
       "PackagePath": "staticwebassets/app.css"
     },
     {
+      "Id": "/workspaces/vista-producto/wwwroot/css/bootstrap-icons.css",
+      "PackagePath": "staticwebassets/css/bootstrap-icons.css"
+    },
+    {
       "Id": "/workspaces/vista-producto/wwwroot/favicon.png",
       "PackagePath": "staticwebassets/favicon.png"
     },

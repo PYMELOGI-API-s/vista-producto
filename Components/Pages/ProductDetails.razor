@@ -1,0 +1,89 @@
+@page "/products/{Id:int}"
+@using BlazorApp.Models
+@using BlazorApp.Services
+@inject IProductService ProductService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Detalles del Producto</PageTitle>
+
+<div class="container mt-4">
+    @if (product == null)
+    {
+        <p><em>Cargando...</em></p>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">@product.Nombre</h3>
+                <div>
+                    <button class="btn btn-primary me-2" @onclick="NavigateToEdit">Editar</button>
+                    <button class="btn btn-secondary" @onclick="NavigateBack">Volver</button>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (!string.IsNullOrEmpty(product.Imagen))
+                {
+                    <img src="@product.Imagen" alt="@product.Nombre" class="img-fluid mb-3" style="max-height: 200px;" />
+                }
+                <dl class="row">
+                    <dt class="col-sm-3">Descripción</dt>
+                    <dd class="col-sm-9">@product.Descripcion</dd>
+
+                    <dt class="col-sm-3">Código de Barras</dt>
+                    <dd class="col-sm-9">@product.CodigoBarras</dd>
+
+                    <dt class="col-sm-3">Precio</dt>
+                    <dd class="col-sm-9">$@product.Precio.ToString("N2")</dd>
+
+                    <dt class="col-sm-3">Stock</dt>
+                    <dd class="col-sm-9">@product.Stock</dd>
+
+                    <dt class="col-sm-3">Categoría</dt>
+                    <dd class="col-sm-9">@product.Categoria</dd>
+
+                    <dt class="col-sm-3">Fecha de Creación</dt>
+                    <dd class="col-sm-9">@product.FechaCreacion.ToLocalTime().ToString("g")</dd>
+
+                    <dt class="col-sm-3">Última Actualización</dt>
+                    <dd class="col-sm-9">@product.FechaActualizacion.ToLocalTime().ToString("g")</dd>
+                </dl>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Product? product;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            product = await ProductService.GetProduct(Id);
+            if (product == null)
+            {
+                NavigationManager.NavigateTo("/products");
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            NavigationManager.NavigateTo("/products");
+        }
+    }
+
+    private void NavigateToEdit()
+    {
+        NavigationManager.NavigateTo($"/products/edit/{Id}");
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo("/products");
+    }
+}

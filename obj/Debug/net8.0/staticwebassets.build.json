@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Uh9SsXLjkZYpixyUoGkTe/wNDdUsjNdm8vDbk7HdHCw=",
+  "Hash": "7S+POfPb9xW0Iipjm8pZxt25I5vl/DrtueCiV8jqnY8=",
   "Source": "myapp",
   "BasePath": "_content/myapp",
   "Mode": "Default",
@@ -72,6 +72,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/app.css"
+    },
+    {
+      "Identity": "/workspaces/vista-producto/wwwroot/css/bootstrap-icons.css",
+      "SourceId": "myapp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/workspaces/vista-producto/wwwroot/",
+      "BasePath": "_content/myapp",
+      "RelativePath": "css/bootstrap-icons.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/css/bootstrap-icons.css"
     },
     {
       "Identity": "/workspaces/vista-producto/wwwroot/favicon.png",

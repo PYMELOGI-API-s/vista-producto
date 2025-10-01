@@ -26,8 +26,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Db3VudGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[/workspaces/vista-producto/Components/Pages/CreateProduct.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9DcmVhdGVQcm9kdWN0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspaces/vista-producto/Components/Pages/EditProduct.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FZGl0UHJvZHVjdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [/workspaces/vista-producto/Components/Pages/Error.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FcnJvci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspaces/vista-producto/Components/Pages/ProductDetails.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Qcm9kdWN0RGV0YWlscy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [/workspaces/vista-producto/Components/Pages/Products.razor]
@@ -44,6 +56,18 @@ build_metadata.AdditionalFiles.CssScope =
 
 [/workspaces/vista-producto/Components/Shared/Alert.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9TaGFyZWQvQWxlcnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspaces/vista-producto/Components/Shared/CustomErrorBoundary.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9TaGFyZWQvQ3VzdG9tRXJyb3JCb3VuZGFyeS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspaces/vista-producto/Components/Shared/ImageUploader.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9TaGFyZWQvSW1hZ2VVcGxvYWRlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspaces/vista-producto/Components/Shared/Modal.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9TaGFyZWQvTW9kYWwucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/workspaces/vista-producto/Components/Shared/ProductForm.razor]

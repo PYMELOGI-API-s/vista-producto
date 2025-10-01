@@ -1,0 +1,85 @@
+@page "/products/edit/{id:int}"
+@using BlazorApp.Models
+@using BlazorApp.Services
+@using BlazorApp.Components.Shared
+@inject IProductService ProductService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Editar Producto</PageTitle>
+
+<div class="container mt-4">
+    @if (product == null)
+    {
+        <p><em>Cargando...</em></p>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-header">
+                <h3>Editar Producto</h3>
+            </div>
+            <div class="card-body">
+                @if (errorMessage != null)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @errorMessage
+                        <button type="button" class="btn-close float-end" @onclick="@(() => errorMessage = null)"></button>
+                    </div>
+                }
+
+                <ProductForm 
+                    Product="@product" 
+                    ButtonText="Actualizar"
+                    OnValidSubmit="@HandleValidSubmit"
+                    OnCancel="@(() => NavigationManager.NavigateTo($"/products/{Id}"))" />
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Product? product;
+    private string? errorMessage;
+    private bool isProcessing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            product = await ProductService.GetProduct(Id);
+            if (product == null)
+            {
+                NavigationManager.NavigateTo("/products");
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            NavigationManager.NavigateTo("/products");
+        }
+    }
+
+    private async Task HandleValidSubmit(Product updatedProduct)
+    {
+        if (isProcessing) return;
+
+        try
+        {
+            isProcessing = true;
+            updatedProduct.FechaActualizacion = DateTime.UtcNow;
+            await ProductService.UpdateProduct(Id, updatedProduct);
+            NavigationManager.NavigateTo($"/products/{Id}");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+}
