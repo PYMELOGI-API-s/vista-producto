@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "7S+POfPb9xW0Iipjm8pZxt25I5vl/DrtueCiV8jqnY8=",
+  "Hash": "zMbMFJoDg9EQK7rNjrybqDrwKMuoDb0ToJYrD7vujjc=",
   "Source": "myapp",
   "BasePath": "_content/myapp",
   "Mode": "Default",
@@ -110,6 +110,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/favicon.png"
+    },
+    {
+      "Identity": "/workspaces/vista-producto/wwwroot/images/638949444588695831.jpg",
+      "SourceId": "myapp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/workspaces/vista-producto/wwwroot/",
+      "BasePath": "_content/myapp",
+      "RelativePath": "images/638949444588695831.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/images/638949444588695831.jpg"
     },
     {
       "Identity": "/workspaces/vista-producto/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.css",
